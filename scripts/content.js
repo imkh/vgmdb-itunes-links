@@ -264,7 +264,7 @@ for (let i = 0; i < countries.length; i++) {
                 const albumInfoList = [
                     `${album.collectionName} / ${album.artistName}`,
                     new Date(album.releaseDate).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "2-digit" }),
-                    `${album.trackCount} tracks (${album.collectionPrice ? album.collectionPrice : "—"} ${album.currency})`
+                    `${album.trackCount} track${album.trackCount > 1 ? "s" : ""} (${album.collectionPrice ? album.collectionPrice : "—"} ${album.currency})`
                 ]
                 for (const albumInfo of albumInfoList) {
                     const li = document.createElement("li")
