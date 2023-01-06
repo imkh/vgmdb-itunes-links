@@ -16,5 +16,8 @@
         "https://vgmdb.net/album/*"
       ]
     }
+  ],
+  "permissions": [
+    "storage"
   ]
 }

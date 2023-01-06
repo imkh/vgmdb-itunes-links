@@ -1,3 +1,6 @@
+const vgmdbAlbumURL = document.querySelector("head > link[rel='canonical']").href
+const vgmdbAlbumID = vgmdbAlbumURL.replace("https://vgmdb.net/album/", "")
+
 const countries = ["JP", "US"]
 const emojis = ["🇯🇵", "🇺🇸"]
 
@@ -144,6 +147,19 @@ const skipProductNames = [
     "Animal Crossing"
 ]
 async function itunesRequest(country) {
+    const cacheKey = `${vgmdbAlbumID}+${country}`
+    const cacheKeyTime = `${cacheKey}_time`
+    const cacheKeyValue = `${cacheKey}_value`
+    const cacheResult = await chrome.storage.local.get([cacheKeyTime, cacheKeyValue])
+    if (cacheResult && cacheResult[cacheKeyTime]) {
+        if (cacheResult[cacheKeyTime] > Date.now() - 3600 * 24 * 1000) {
+            console.log(`[iTunes ${country}] Cache valid found!`)
+            return cacheResult[cacheKeyValue]
+        } else {
+            console.log(`[iTunes ${country}] Cache invalid found! Cleaning up...`)
+        }
+    }
+
     if (Array.from(productNamesSet).find(productName => skipProductNames.find(toSkip => productName.includes(toSkip)))) {
         return [];
     }
@@ -186,6 +202,14 @@ async function itunesRequest(country) {
         }
         return dateA - dateB
     })
+
+    const cache = {};
+    cache[cacheKeyTime] = Date.now()
+    cache[cacheKeyValue] = albums
+    chrome.storage.local.set(cache).then(() => {
+        console.log(`Cache set for ${cacheKeyValue}`);
+    });
+
     return albums;
 }
 
